@@ -2,6 +2,9 @@ on:
   pull_request_review:
     types: [submitted]
 
+permissions:
+  contents: write
+
 jobs:
   apply-label:
     runs-on: ubuntu-latest
