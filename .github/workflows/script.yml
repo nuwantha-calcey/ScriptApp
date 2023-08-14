@@ -1,6 +1,6 @@
 on:
-  pull_request_review:
-    types: [submitted, dismissed]
+  pull_request:
+    types: [opened]
 
 permissions:
   pull-requests: write
