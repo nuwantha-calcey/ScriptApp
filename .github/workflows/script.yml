@@ -1,12 +1,13 @@
 on:
   pull_request_review:
-    types: [submitted]
+    types: [submitted, dismissed]
 
 permissions:
   pull-requests: write
 
 jobs:
   apply-label:
+    if: github.event.action == 'submitted'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -17,4 +18,18 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: ['changes-requested']
+            })
+
+  remove-label:
+    if: github.event.action == 'dismissed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'changes-requested'
             })
