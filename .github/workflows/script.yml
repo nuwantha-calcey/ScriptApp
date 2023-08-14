@@ -1,0 +1,17 @@
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  apply-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repository.owner,
+              repo: context.repository.repo,
+              labels: ['changes-requested']
+            })
