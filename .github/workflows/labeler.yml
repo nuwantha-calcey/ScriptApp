@@ -11,6 +11,14 @@ permissions:
   pull-requests: write
 
 jobs:
+  dump_contexts_to_log:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
   label-changes-requested:
     if: github.event.review.state == 'changes_requested'
 
