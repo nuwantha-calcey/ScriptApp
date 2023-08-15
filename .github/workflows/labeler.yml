@@ -26,7 +26,6 @@ jobs:
   #           console.log(labels.data)
 
   label-changes-requested:
-    if: github.event.review.state == 'changes_requested'
 
     runs-on: ubuntu-latest
 
