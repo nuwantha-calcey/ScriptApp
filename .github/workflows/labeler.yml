@@ -12,18 +12,18 @@ permissions:
   pull-requests: write
 
 jobs:
-  dump_contexts_to_log:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            const labels = await github.rest.issues.listLabelsOnIssue({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            })
-            console.log(labels.data)
+  # dump_contexts_to_log:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/github-script@v6
+  #       with:
+  #         script: |
+  #           const labels = await github.rest.issues.listLabelsOnIssue({
+  #             owner: context.repo.owner,
+  #             repo: context.repo.repo,
+  #             issue_number: context.issue.number,
+  #           })
+  #           console.log(labels.data)
 
   label-changes-requested:
     if: github.event.review.state == 'changes_requested'
@@ -31,22 +31,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/github-script@v6
+      - if: github.event.review.state == 'changes_requested'
+        uses: actions/github-script@v6
         with:
-          script: console.log(context)
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['changes-requested']
+            })
 
-            # github.rest.issues.addLabels({
-            #   issue_number: context.issue.number,
-            #   owner: context.repo.owner,
-            #   repo: context.repo.repo,
-            #   labels: ['changes-requested']
-            # })
+      - if: github.event.review.state == 'approved'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'changes-requested'
+            })
+
       - uses: actions/github-script@v6
         with:
           script: console.log(context.repo)
+
       - uses: actions/github-script@v6
         with:
           script: console.log(context.repo.owner)
+
       - uses: actions/github-script@v6
         with:
           script: console.log(context.repo.repo)
