@@ -27,3 +27,12 @@ jobs:
             #   repo: context.repo.repo,
             #   labels: ['changes-requested']
             # })
+      - uses: actions/github-script@v6
+        with:
+          script: console.log(context.repo)
+      - uses: actions/github-script@v6
+        with:
+          script: console.log(context.repo.owner)
+      - uses: actions/github-script@v6
+        with:
+          script: console.log(context.repo.repo)
