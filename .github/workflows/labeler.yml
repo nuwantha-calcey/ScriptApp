@@ -19,8 +19,7 @@ jobs:
     steps:
       - uses: actions/github-script@v6
         with:
-          script: |
-            console.log(context)
+          script: console.log(context)
 
             # github.rest.issues.addLabels({
             #   issue_number: context.issue.number,
