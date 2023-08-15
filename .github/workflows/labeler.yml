@@ -45,21 +45,19 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            github.rest.issues.removeLabel({
-              issue_number: context.issue.number,
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'changes-requested'
-            })
+              issue_number: context.issue.number,
+            });
 
-      - uses: actions/github-script@v6
-        with:
-          script: console.log(context.repo)
+            const labelToRemove = 'changes-requested';
 
-      - uses: actions/github-script@v6
-        with:
-          script: console.log(context.repo.owner)
-
-      - uses: actions/github-script@v6
-        with:
-          script: console.log(context.repo.repo)
+            if (labels.some(label => label.name === labelToRemove)) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: labelToRemove,
+              });
+            }
