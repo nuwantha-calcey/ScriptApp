@@ -1,0 +1,30 @@
+name: "Pull Request Labeler"
+
+on:
+  pull_request:
+  pull_request_review:
+    types:
+      - submitted
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label-changes-requested:
+    if: github.event.review.state == 'changes_requested'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            console.log(context)
+
+            # github.rest.issues.addLabels({
+            #   issue_number: context.issue.number,
+            #   owner: context.repo.owner,
+            #   repo: context.repo.repo,
+            #   labels: ['changes-requested']
+            # })

@@ -1,6 +1,6 @@
 name: skip duplicate workflows
 
-on: push
+on: workflow_dispatch
 
 permissions:
   actions: write
