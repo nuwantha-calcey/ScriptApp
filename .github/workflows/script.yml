@@ -1,18 +1,30 @@
 on:
-  workflow_dispatch:
-  # pull_request_review:
-  #   types: [submitted]
+  pull_request:
+    types:
+      - opened
+      - review_requested  
+  pull_request_review:
+    types:
+      - submitted
 
 jobs:
-  apply-label:
+  dump_contexts_to_log:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repository.owner,
-              repo: context.repository.repo,
-              labels: ['changes-requested']
-            })
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
+  # apply-label:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/github-script@v6
+  #       with:
+  #         script: |
+  #           github.rest.issues.addLabels({
+  #             issue_number: context.issue.number,
+  #             owner: context.repository.owner,
+  #             repo: context.repository.repo,
+  #             labels: ['changes-requested']
+  #           })
