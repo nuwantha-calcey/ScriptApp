@@ -1,0 +1,125 @@
+name: "Pull Request Labeler"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - review_requested
+  pull_request_review:
+    types:
+      - submitted
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dump_contexts_to_log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+  label-file-changes:
+    if: github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v3
+
+  label-branch-names:
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - if: startsWith(github.base_ref, 'releases/')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['targeted-release-branch']
+            });
+
+      - if: endsWith(github.base_ref, 'base')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['targeted-feature-base-branch']
+            });
+
+      - if: contains(github.base_ref, 'bug')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bug-fix']
+            });
+
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const regex = /^(releases\/sprint-[0-9]+|feature\/s[0-9]+\/[a-z0-9-]+|develop|qa|staging)$/;
+            const branchName = context.payload.pull_request.head.ref;
+
+            if (!regex.test(branchName)) {
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: ['branch-name-fix-needed']
+              });
+            }
+
+  label-changes-requested:
+    if: github.event.review.state != 'commented'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - if: github.event.review.state == 'changes_requested'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['changes-requested']
+            });
+
+      - if: github.event.action == 'review_requested'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const labelToRemove = 'changes-requested';
+
+            if (labels.some(label => label.name === labelToRemove)) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: labelToRemove
+              });
+            }
+              

@@ -4,6 +4,7 @@ using EmployeeManagement.Models;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
+// test
 namespace EmployeeManagement.Controllers
 {
     [Route("api/statistics")]
