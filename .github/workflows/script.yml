@@ -3,6 +3,7 @@ on:
     types:
       - opened
       - review_requested  
+      - closed
   pull_request_review:
     types:
       - submitted
