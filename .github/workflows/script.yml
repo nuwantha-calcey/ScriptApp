@@ -1,32 +1,25 @@
-on:
+name: Build and Test
+
+on: 
+  workflow_dispatch:
+  
   pull_request:
-    types:
-      - opened
-      - review_requested  
-      - closed
-  pull_request_review:
-    types:
-      - submitted
+    types: [reopened, ready_for_review, closed, review_requested]
+
   push:
+    branches:
+      - 'master'
+      - 'releases/**'
 
 jobs:
-  dump_contexts_to_log:
+  build-and-test:
     runs-on: ubuntu-latest
-    steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
 
-  # apply-label:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/github-script@v6
-  #       with:
-  #         script: |
-  #           github.rest.issues.addLabels({
-  #             issue_number: context.issue.number,
-  #             owner: context.repository.owner,
-  #             repo: context.repository.repo,
-  #             labels: ['changes-requested']
-  #           })
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup .NET 7
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
