@@ -7,6 +7,7 @@ on:
   pull_request_review:
     types:
       - submitted
+  push:
 
 jobs:
   dump_contexts_to_log:
