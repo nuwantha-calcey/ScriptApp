@@ -86,6 +86,8 @@ jobs:
             }
 
   label-changes-requested:
+    if: github.event.review.state != 'commented'
+
     runs-on: ubuntu-latest
 
     steps:
