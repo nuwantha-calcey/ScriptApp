@@ -41,7 +41,7 @@ jobs:
               labels: ['changes-requested']
             });
 
-      - if: github.event.review.state == 'approved'
+      - if: github.event.action == 'review_requested'
         uses: actions/github-script@v6
         with:
           script: |
