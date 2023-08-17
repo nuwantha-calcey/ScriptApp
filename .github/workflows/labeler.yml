@@ -75,10 +75,10 @@ jobs:
             const branchName = context.payload.pull_request.head.ref;
 
             if (!regex.test(branchName)) {
-              await github.issues.addLabels({
+              github.rest.issues.addLabels({
+                issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
                 labels: ['branch-name-fix-needed']
               });
             }
