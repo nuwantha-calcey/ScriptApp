@@ -63,3 +63,23 @@ jobs:
                 name: labelToRemove
               });
             }
+
+  label-invalid-branch-name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const regex = /^(releases\/sprint-[0-9]+|feature\/s[0-9]+\/[a-z0-9-]+|develop|qa|staging)$/;
+            const branchName = context.payload.pull_request.head.ref;
+
+            if (!regex.test(branchName)) {
+              await github.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['branch-name-fix-needed']
+              });
+            }
+              
