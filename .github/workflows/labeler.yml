@@ -73,7 +73,7 @@ jobs:
       - uses: actions/github-script@v6
         with:
           script: |
-            const regex = /^(releases\/sprint-[0-9]+|feature\/s[0-9]+\/[a-z0-9-]+|develop|qa|staging)$/;
+            const regex = /^(releases\/sprint-\d+(?:\.\d+)?|feature\/s\d+(\.\d+)?\/.+|develop|qa|staging)$/;
             const branchName = context.payload.pull_request.head.ref;
 
             if (!regex.test(branchName)) {
